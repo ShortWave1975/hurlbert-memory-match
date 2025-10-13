@@ -1,0 +1,62 @@
+/* src/components/card.css */
+.card {
+  perspective: 1000px;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.card:disabled { cursor: default; }
+
+.card_inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 280ms ease;
+  transform-style: preserve-3d;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.35);
+}
+
+.card.is-flipped .card_inner { transform: rotateY(180deg); }
+
+.card.is-matched .card_inner {
+  box-shadow: 0 0 0 3px #3ba55d inset, 0 6px 18px rgba(0,0,0,.35);
+}
+
+.card_face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+/* 🎄 Candy-cane striped front */
+.card_face--front {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #c62828 0 14px,
+      #ffffff 14px 28px,
+      #2e7d32 28px 42px,
+      #ffffff 42px 56px
+    );
+  filter: saturate(0.9) contrast(0.95);
+}
+
+/* Photo side */
+.card_face--back {
+  transform: rotateY(180deg);
+  background: #000;
+  display: grid;
+  place-items: center;
+}
+
+.card_face--back img {
+  width: 100%; height: 100%; object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: manipulation;
+}
