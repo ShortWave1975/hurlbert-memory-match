@@ -7,7 +7,6 @@ import "./App.css";
 export default function App() {
   const [size, setSize] = useState(16);
   const [deck, setDeck] = useState(() => buildDeck(DEFAULT_FILES, 16));
-
   const [first, setFirst] = useState(null);
   const [lock, setLock] = useState(false);
   const [moves, setMoves] = useState(0);
@@ -115,7 +114,6 @@ export default function App() {
               <div className="stat">
                 Time: <strong>{formatTime(elapsed)}</strong>
               </div>
-
               <select
                 className="sel"
                 aria-label="Difficulty"
@@ -126,7 +124,6 @@ export default function App() {
                 <option value={20}>Medium (10 pairs)</option>
                 <option value={24}>Hard (12 pairs)</option>
               </select>
-
               <button className="btn" onClick={() => reset(size)}>
                 New Game
               </button>
@@ -196,7 +193,7 @@ export default function App() {
   );
 }
 
-// --- helpers for safe audio ---
+/* --- helpers for safe audio --- */
 function makeAudio(src) {
   const a = new Audio();
   a.src = src;
