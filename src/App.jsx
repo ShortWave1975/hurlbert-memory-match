@@ -1,14 +1,16 @@
 // src/App.jsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Card from "./components/card.jsx";
 import { buildDeck, DEFAULT_FILES } from "./data/deck.js";
 import "./App.css";
 
 export default function App() {
+  // difficulty (number of cards)
   const [size, setSize] = useState(16);
-  const initialDeck = useMemo(() => buildDeck(DEFAULT_FILES, size), [size]);
 
-  const [deck, setDeck] = useState(initialDeck);
+  // build the very first deck once (random subset)
+  const [deck, setDeck] = useState(() => buildDeck(DEFAULT_FILES, 16));
+
   const [first, setFirst] = useState(null);
   const [lock, setLock] = useState(false);
   const [moves, setMoves] = useState(0);
@@ -17,14 +19,14 @@ export default function App() {
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef(null);
 
-  // --- Sounds
-  const flipSfx = useMemo(() => makeAudio("/sfx/flip.mp3"), []);
-  const matchSfx = useMemo(() => makeAudio("/sfx/match.mp3"), []);
-  const winSfx = useMemo(() => makeAudio("/sfx/win.mp3"), []);
+  // sounds (stable for this mount)
+  const flipSfx = useRef(makeAudio("/sfx/flip.mp3")).current;
+  const matchSfx = useRef(makeAudio("/sfx/match.mp3")).current;
+  const winSfx = useRef(makeAudio("/sfx/win.mp3")).current;
 
   const allMatched = matchedCount === deck.length && deck.length > 0;
 
-  // Timer
+  // timer
   useEffect(() => {
     if (startedAt && !timerRef.current) {
       timerRef.current = setInterval(() => {
@@ -36,25 +38,33 @@ export default function App() {
     };
   }, [startedAt]);
 
-  // Play win sound when done
+  // win sound
   useEffect(() => {
     if (allMatched) tryPlay(winSfx);
   }, [allMatched, winSfx]);
 
   function reset(newSize = size) {
+    // set difficulty
     setSize(newSize);
+
+    // 🔁 new randomized deck every single time
     const fresh = buildDeck(DEFAULT_FILES, newSize);
     setDeck(fresh);
+
+    // reset gameplay state
     setFirst(null);
     setLock(false);
     setMoves(0);
     setMatchedCount(0);
     setStartedAt(null);
     setElapsed(0);
+
+    // stop timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+
     window.scrollTo(0, 0);
   }
 
@@ -72,13 +82,16 @@ export default function App() {
     if (!startedAt) setStartedAt(Date.now());
     tryPlay(flipSfx);
 
+    // flip card
     setDeck((d) => d.map((c) => (c.id === id ? { ...c, revealed: true } : c)));
 
+    // if it's the first card
     if (!first) {
       setFirst({ ...clicked, revealed: true });
       return;
     }
 
+    // second card
     setLock(true);
     setMoves((m) => m + 1);
     const isMatch = first.pairId === clicked.pairId;
@@ -93,6 +106,7 @@ export default function App() {
         );
         setMatchedCount((cnt) => cnt + 2);
       } else {
+        // flip back
         setDeck((d) =>
           d.map((c) =>
             c.id === first.id || c.id === id ? { ...c, revealed: false } : c
@@ -104,7 +118,7 @@ export default function App() {
     }, 600);
   }
 
-  // Columns depend on difficulty
+  // columns per difficulty
   const cols = size === 16 ? 4 : size === 20 ? 5 : 6;
 
   return (
