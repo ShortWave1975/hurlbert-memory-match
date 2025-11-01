@@ -13,7 +13,10 @@ export default function App() {
   const [matchedCount, setMatchedCount] = useState(0);
   const [startedAt, setStartedAt] = useState(null);
   const [elapsed, setElapsed] = useState(0);
-  const [soundOn, setSoundOn] = useState(true); // ✅ new
+  const [soundOn, setSoundOn] = useState(true);
+
+  // ✅ INTRO
+  const [showIntro, setShowIntro] = useState(true);
 
   const timerRef = useRef(null);
 
@@ -22,6 +25,18 @@ export default function App() {
   const winSfx = useRef(makeAudio("/sfx/win.mp3")).current;
 
   const allMatched = matchedCount === deck.length && deck.length > 0;
+
+  // ✅ check localStorage for intro
+  useEffect(() => {
+    try {
+      const seen = localStorage.getItem("hm_seenIntro");
+      if (seen === "1") {
+        setShowIntro(false);
+      }
+    } catch {
+      // if localStorage not available, just show intro
+    }
+  }, []);
 
   // timer
   useEffect(() => {
@@ -38,9 +53,8 @@ export default function App() {
   // play win when done (respect toggle)
   useEffect(() => {
     if (allMatched) safePlay(winSfx);
-  }, [allMatched, winSfx, soundOn]); // ✅ depend on soundOn so if they turn it off, future wins respect it
+  }, [allMatched, winSfx, soundOn]);
 
-  // respect the toggle
   function safePlay(audio) {
     if (!soundOn) return;
     tryPlay(audio);
@@ -75,7 +89,7 @@ export default function App() {
     if (!clicked || clicked.matched || clicked.revealed) return;
 
     if (!startedAt) setStartedAt(Date.now());
-    safePlay(flipSfx); // ✅ use safePlay
+    safePlay(flipSfx);
 
     setDeck((d) => d.map((c) => (c.id === id ? { ...c, revealed: true } : c)));
 
@@ -90,7 +104,7 @@ export default function App() {
 
     setTimeout(() => {
       if (isMatch) {
-        safePlay(matchSfx); // ✅ use safePlay
+        safePlay(matchSfx);
         setDeck((d) =>
           d.map((c) =>
             c.pairId === clicked.pairId ? { ...c, matched: true } : c
@@ -110,6 +124,16 @@ export default function App() {
   }
 
   const cols = size === 16 ? 4 : size === 20 ? 5 : 6;
+
+  // ✅ handle closing intro
+  function handleCloseIntro() {
+    setShowIntro(false);
+    try {
+      localStorage.setItem("hm_seenIntro", "1");
+    } catch {
+      // ignore
+    }
+  }
 
   return (
     <div className="page">
@@ -138,7 +162,6 @@ export default function App() {
                 New Game
               </button>
 
-              {/* ✅ Sound toggle */}
               <button
                 className={`btn btn-sound ${soundOn ? "is-on" : "is-off"}`}
                 onClick={() => setSoundOn((s) => !s)}
@@ -208,6 +231,25 @@ export default function App() {
             </span>
           ))}
         </div>
+
+        {/* ✅ INTRO OVERLAY */}
+        {showIntro && (
+          <div className="intro-overlay" role="dialog" aria-modal="true">
+            <div className="intro-card">
+              <h2>🎄 Welcome, Hurlbert family!</h2>
+              <p>
+                Tap two matching cards to clear the board. Choose a difficulty up
+                top, and turn sound on/off anytime.
+              </p>
+              <p className="intro-small">
+                (This screen shows only the first time on this device.)
+              </p>
+              <button className="btn intro-btn" onClick={handleCloseIntro}>
+                Start Playing ➜
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

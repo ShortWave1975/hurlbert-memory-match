@@ -315,4 +315,55 @@ button {
     font-size: 0.8rem;
   }
 }
+/* ========== INTRO OVERLAY ========== */
+
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.75);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 999; /* above snow and header */
+}
+
+.intro-card {
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.18), rgba(13, 27, 42, 0.95));
+  border: 1px solid rgba(248, 250, 252, 0.25);
+  border-radius: 18px;
+  padding: 28px 26px 22px;
+  max-width: 460px;
+  width: min(90vw, 460px);
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.intro-card h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.intro-card p {
+  margin-bottom: 12px;
+}
+
+.intro-small {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  margin-bottom: 16px;
+}
+
+.intro-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .intro-card {
+    padding: 24px 16px 18px;
+  }
+  .intro-card h2 {
+    font-size: 1.35rem;
+  }
+}
 
