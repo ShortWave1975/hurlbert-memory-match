@@ -5,36 +5,48 @@
   --gap: 14px;
 }
 
-/* --- Global reset and base --- */
-* {
-  box-sizing: border-box;
-}
+/* ========================
+   GLOBAL / BACKGROUND FIX
+   ======================== */
 
 html,
 body,
 #root {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
+/* body = typography + fallback color */
 body {
-  margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto;
   color: #f8fafc;
+  background-color: #0d1b2a; /* fallback so we never flash white */
+}
+
+/* root = actual gradient background (stable on mobile scroll) */
+#root {
+  min-height: 100vh;
   background:
     radial-gradient(1200px 800px at 50% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
     linear-gradient(180deg, #0d1b2a 0%, #1b263b 60%, #0d1b2a 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
-/* --- NEW: outer centering container --- */
+/* ========================
+   LAYOUT
+   ======================== */
+
+/* outer container (full width) */
 .page {
+  width: 100%;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;   /* horizontally center entire game */
-  align-items: flex-start;   /* keep it near top */
   padding: 1.5rem 1rem 3rem;
 }
 
-/* --- Main app wrapper --- */
+/* main app shell — CENTERED */
 .wrap {
   min-height: 100%;
   display: grid;
@@ -42,10 +54,16 @@ body {
   gap: var(--gap);
   padding: clamp(12px, 2.5vw, 24px);
   width: 100%;
-  max-width: 1120px;           /* wider container for large screens */
+  max-width: 1120px;    /* how wide the game can get on desktop */
+  margin: 0 auto;       /* 👈 centers whole app */
+  position: relative;
+  z-index: 1;           /* stay above snow */
 }
 
-/* --- Header / Controls --- */
+/* ========================
+   HEADER / CONTROLS
+   ======================== */
+
 .topbar__inner,
 .content,
 .foot {
@@ -62,7 +80,7 @@ body {
   border-radius: 14px;
   padding: 10px 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  z-index: 2;
+  z-index: 3;
 }
 
 .topbar h1 {
@@ -105,7 +123,10 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* --- Board --- */
+/* ========================
+   BOARD / GRID
+   ======================== */
+
 .content {
   display: grid;
   justify-items: center;
@@ -120,21 +141,25 @@ body {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35),
     inset 0 0 40px rgba(255, 255, 255, 0.04);
   display: flex;
-  justify-content: center;   /* center grid horizontally */
+  justify-content: center;  /* center grid */
+  width: 100%;
 }
 
 .grid {
   display: grid;
   gap: var(--gap);
   width: min(100%, 980px);
-  margin: 0 auto;
+  margin: 0 auto;           /* center grid itself */
 }
 
 .cell {
   width: 100%;
 }
 
-/* --- Win screen --- */
+/* ========================
+   WIN SCREEN / FOOTER
+   ======================== */
+
 .win {
   display: grid;
   place-items: center;
@@ -157,7 +182,10 @@ body {
   font-size: 0.9rem;
 }
 
-/* --- Snow animation --- */
+/* ========================
+   SNOW LAYER
+   ======================== */
+
 .snow {
   pointer-events: none;
   position: fixed;
@@ -191,7 +219,10 @@ body {
   }
 }
 
-/* --- Headings --- */
+/* ========================
+   TYPO
+   ======================== */
+
 h1,
 h2 {
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
@@ -202,49 +233,91 @@ h2 {
   color: #fffae3;
 }
 
-/* --- Interactions --- */
 button {
   cursor: pointer;
 }
 
-/* --- RESPONSIVE BREAKPOINTS --- */
+/* ========================
+   RESPONSIVE
+   ======================== */
 
-/* Tablets */
+/* Tablets / mid screens */
 @media (max-width: 900px) {
   .controls {
     justify-content: center;
   }
-  .grid {
-    grid-template-columns: repeat(3, minmax(110px, 1fr)) !important;
-  }
 }
 
-/* Phones */
-@media (max-width: 700px) {
-  .wrap {
-    padding: 16px;
-  }
-  .board {
-    padding: 12px;
-  }
+/* Phones — portrait: we want 3 columns */
+@media (max-width: 700px) and (orientation: portrait) {
+  .content,
+  .board,
   .grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    max-width: none;
+    width: 100%;
+  }
+
+  .grid {
+    /* 3 across on normal phones */
+    grid-template-columns: repeat(3, minmax(100px, 1fr)) !important;
     gap: 10px;
   }
-  .controls {
-    gap: 8px;
+
+  .wrap {
+    padding: 14px 6px 40px;
   }
+
+  .board {
+    padding: 10px 4px;
+  }
+
   .topbar h1 {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 }
 
-/* Very small phones */
-@media (max-width: 480px) {
+/* Narrow iPhones but still portrait (375–430px) */
+@media (max-width: 430px) and (orientation: portrait) {
   .grid {
-    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)) !important;
+    grid-template-columns: repeat(3, minmax(95px, 1fr)) !important;
+    gap: 8px;
   }
   .board {
+    padding-inline: 4px;
+  }
+}
+
+/* Phone / tablet landscape — show more */
+@media (max-width: 900px) and (orientation: landscape) {
+  .content,
+  .board,
+  .grid {
+    max-width: none;
+    width: 100%;
+  }
+
+  .grid {
+    /* 4 across in landscape */
+    grid-template-columns: repeat(4, minmax(120px, 1fr)) !important;
+    gap: 12px;
+  }
+
+  .board {
     padding: 10px;
+  }
+
+  .topbar h1 {
+    font-size: 1.1rem;
+  }
+
+  .controls {
+    gap: 6px;
+  }
+}
+
+/* Ultra-narrow fallback */
+@media (max-width: 340px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(110px, 1fr)) !important;
   }
 }
