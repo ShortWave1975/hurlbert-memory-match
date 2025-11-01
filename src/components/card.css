@@ -8,7 +8,9 @@
   padding: 0;
 }
 
-.card:disabled { cursor: default; }
+.card:disabled {
+  cursor: default;
+}
 
 .card_inner {
   position: relative;
@@ -17,17 +19,20 @@
   transition: transform 280ms ease;
   transform-style: preserve-3d;
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
-.card.is-flipped .card_inner { transform: rotateY(180deg); }
+.card.is-flipped .card_inner {
+  transform: rotateY(180deg);
+}
 
 .card.is-matched .card_inner {
-  box-shadow: 0 0 0 3px #3ba55d inset, 0 6px 18px rgba(0,0,0,.35);
+  box-shadow: 0 0 0 3px #3ba55d inset, 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 .card_face {
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   backface-visibility: hidden;
   border-radius: inherit;
   overflow: hidden;
@@ -55,8 +60,18 @@
 }
 
 .card_face--back img {
-  width: 100%; height: 100%; object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   user-select: none;
   -webkit-user-drag: none;
   touch-action: manipulation;
+}
+
+/* ---------- Mobile tweaks (optional) ---------- */
+@media (max-width: 560px) {
+  /* keep cards from getting too tall if a column gets wide */
+  .card {
+    max-height: 210px;
+  }
 }

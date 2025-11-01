@@ -5,7 +5,7 @@
   --gap: 14px;
 }
 
-/* --- Base layout --- */
+/* --- Global reset and base --- */
 * {
   box-sizing: border-box;
 }
@@ -20,18 +20,29 @@ body {
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto;
   color: #f8fafc;
-  /* Festive dark background with subtle vignette */
   background:
     radial-gradient(1200px 800px at 50% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
     linear-gradient(180deg, #0d1b2a 0%, #1b263b 60%, #0d1b2a 100%);
 }
 
+/* --- NEW: outer centering container --- */
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;   /* horizontally center entire game */
+  align-items: flex-start;   /* keep it near top */
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* --- Main app wrapper --- */
 .wrap {
   min-height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: var(--gap);
   padding: clamp(12px, 2.5vw, 24px);
+  width: 100%;
+  max-width: 1120px;           /* wider container for large screens */
 }
 
 /* --- Header / Controls --- */
@@ -51,11 +62,13 @@ body {
   border-radius: 14px;
   padding: 10px 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2;
 }
 
 .topbar h1 {
   margin: 0;
   font-size: clamp(18px, 3vw, 28px);
+  text-align: center;
 }
 
 .controls {
@@ -63,6 +76,7 @@ body {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
   margin-top: 10px;
 }
 
@@ -105,29 +119,19 @@ body {
   padding: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35),
     inset 0 0 40px rgba(255, 255, 255, 0.04);
+  display: flex;
+  justify-content: center;   /* center grid horizontally */
 }
 
-/* The grid columns are dynamically set inline via style={} */
 .grid {
   display: grid;
   gap: var(--gap);
   width: min(100%, 980px);
+  margin: 0 auto;
 }
 
 .cell {
   width: 100%;
-}
-
-/* Responsive fallback if window narrows */
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(3, minmax(100px, 1fr)) !important;
-  }
-}
-@media (max-width: 560px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(100px, 1fr)) !important;
-  }
 }
 
 /* --- Win screen --- */
@@ -187,7 +191,7 @@ body {
   }
 }
 
-/* --- Minor aesthetic tweaks --- */
+/* --- Headings --- */
 h1,
 h2 {
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
@@ -198,6 +202,49 @@ h2 {
   color: #fffae3;
 }
 
+/* --- Interactions --- */
 button {
   cursor: pointer;
+}
+
+/* --- RESPONSIVE BREAKPOINTS --- */
+
+/* Tablets */
+@media (max-width: 900px) {
+  .controls {
+    justify-content: center;
+  }
+  .grid {
+    grid-template-columns: repeat(3, minmax(110px, 1fr)) !important;
+  }
+}
+
+/* Phones */
+@media (max-width: 700px) {
+  .wrap {
+    padding: 16px;
+  }
+  .board {
+    padding: 12px;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    gap: 10px;
+  }
+  .controls {
+    gap: 8px;
+  }
+  .topbar h1 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)) !important;
+  }
+  .board {
+    padding: 10px;
+  }
 }
