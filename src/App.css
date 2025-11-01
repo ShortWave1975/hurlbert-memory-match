@@ -5,9 +5,7 @@
   --gap: 14px;
 }
 
-/* ========================
-   GLOBAL / BACKGROUND FIX
-   ======================== */
+/* ========== GLOBAL / BACKGROUND FIX ========== */
 
 html,
 body,
@@ -17,14 +15,13 @@ body,
   padding: 0;
 }
 
-/* body = typography + fallback color */
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto;
   color: #f8fafc;
-  background-color: #0d1b2a; /* fallback so we never flash white */
+  background-color: #0d1b2a; /* fallback so we never see white */
 }
 
-/* root = actual gradient background (stable on mobile scroll) */
+/* keep the gradient on #root so mobile scroll doesn't go white */
 #root {
   min-height: 100vh;
   background:
@@ -35,42 +32,30 @@ body {
   background-size: cover;
 }
 
-/* ========================
-   LAYOUT
-   ======================== */
+/* ========== PAGE + APP SHELL ========== */
 
-/* outer container (full width) */
+/* simple block container — NO flex here */
 .page {
   width: 100%;
   min-height: 100vh;
   padding: 1.5rem 1rem 3rem;
 }
 
-/* main app shell — CENTERED */
+/* this is the real “app” — center this */
 .wrap {
+  width: 100%;
+  max-width: 1120px;          /* <- how wide the game is allowed to get */
+  margin: 0 auto;             /* ✅ THIS centers on desktop and mobile */
   min-height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: var(--gap);
   padding: clamp(12px, 2.5vw, 24px);
-  width: 100%;
-  max-width: 1120px;    /* how wide the game can get on desktop */
-  margin: 0 auto;       /* 👈 centers whole app */
   position: relative;
-  z-index: 1;           /* stay above snow */
+  z-index: 1;                 /* above snow */
 }
 
-/* ========================
-   HEADER / CONTROLS
-   ======================== */
-
-.topbar__inner,
-.content,
-.foot {
-  max-width: 1040px;
-  margin: 0 auto;
-  width: 100%;
-}
+/* ========== HEADER / CONTROLS ========== */
 
 .topbar {
   position: sticky;
@@ -81,6 +66,14 @@ body {
   padding: 10px 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   z-index: 3;
+}
+
+.topbar__inner,
+.content,
+.foot {
+  max-width: 1040px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .topbar h1 {
@@ -123,14 +116,14 @@ body {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* ========================
-   BOARD / GRID
-   ======================== */
+/* ========== BOARD / GRID ========== */
 
 .content {
-  display: grid;
-  justify-items: center;
-  align-content: start;
+  /* center the board section itself */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .board {
@@ -140,25 +133,25 @@ body {
   padding: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35),
     inset 0 0 40px rgba(255, 255, 255, 0.04);
-  display: flex;
-  justify-content: center;  /* center grid */
   width: 100%;
+  max-width: 980px;
+  display: flex;
+  justify-content: center;   /* ✅ center the grid */
+  margin: 0 auto;            /* ✅ in case flex breaks, this still centers */
 }
 
 .grid {
   display: grid;
   gap: var(--gap);
-  width: min(100%, 980px);
-  margin: 0 auto;           /* center grid itself */
+  width: 100%;
+  margin: 0 auto;
 }
 
 .cell {
   width: 100%;
 }
 
-/* ========================
-   WIN SCREEN / FOOTER
-   ======================== */
+/* ========== WIN + FOOTER ========== */
 
 .win {
   display: grid;
@@ -182,9 +175,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* ========================
-   SNOW LAYER
-   ======================== */
+/* ========== SNOW ========== */
 
 .snow {
   pointer-events: none;
@@ -219,9 +210,7 @@ body {
   }
 }
 
-/* ========================
-   TYPO
-   ======================== */
+/* ========== TYPO ========== */
 
 h1,
 h2 {
@@ -237,18 +226,16 @@ button {
   cursor: pointer;
 }
 
-/* ========================
-   RESPONSIVE
-   ======================== */
+/* ========== RESPONSIVE ========== */
 
-/* Tablets / mid screens */
+/* Tablets */
 @media (max-width: 900px) {
   .controls {
     justify-content: center;
   }
 }
 
-/* Phones — portrait: we want 3 columns */
+/* Phones — PORTRAIT: 3 columns, smaller cards */
 @media (max-width: 700px) and (orientation: portrait) {
   .content,
   .board,
@@ -258,9 +245,8 @@ button {
   }
 
   .grid {
-    /* 3 across on normal phones */
-    grid-template-columns: repeat(3, minmax(100px, 1fr)) !important;
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(90px, 1fr)) !important; /* was 100px */
+    gap: 8px;
   }
 
   .wrap {
@@ -276,18 +262,18 @@ button {
   }
 }
 
-/* Narrow iPhones but still portrait (375–430px) */
+/* Narrow iPhones in portrait */
 @media (max-width: 430px) and (orientation: portrait) {
   .grid {
-    grid-template-columns: repeat(3, minmax(95px, 1fr)) !important;
-    gap: 8px;
+    grid-template-columns: repeat(3, minmax(85px, 1fr)) !important;
+    gap: 6px;
   }
   .board {
     padding-inline: 4px;
   }
 }
 
-/* Phone / tablet landscape — show more */
+/* Phones / landscape — show 4 cols */
 @media (max-width: 900px) and (orientation: landscape) {
   .content,
   .board,
@@ -297,9 +283,8 @@ button {
   }
 
   .grid {
-    /* 4 across in landscape */
-    grid-template-columns: repeat(4, minmax(120px, 1fr)) !important;
-    gap: 12px;
+    grid-template-columns: repeat(4, minmax(110px, 1fr)) !important;
+    gap: 10px;
   }
 
   .board {
