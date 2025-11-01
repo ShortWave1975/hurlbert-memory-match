@@ -14,18 +14,19 @@ export default function App() {
   const [startedAt, setStartedAt] = useState(null);
   const [elapsed, setElapsed] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
-  const [showIntro, setShowIntro] = useState(true); // ✅ intro
+
+  // ✅ INTRO
+  const [showIntro, setShowIntro] = useState(true);
 
   const timerRef = useRef(null);
 
-  // sounds
   const flipSfx = useRef(makeAudio("/sfx/flip.mp3")).current;
   const matchSfx = useRef(makeAudio("/sfx/match.mp3")).current;
   const winSfx = useRef(makeAudio("/sfx/win.mp3")).current;
 
   const allMatched = matchedCount === deck.length && deck.length > 0;
 
-  // ✅ check once if user has seen intro
+  // ✅ check localStorage for intro
   useEffect(() => {
     try {
       const seen = localStorage.getItem("hm_seenIntro");
@@ -33,7 +34,7 @@ export default function App() {
         setShowIntro(false);
       }
     } catch {
-      // ignore if localStorage not available
+      // if localStorage not available, just show intro
     }
   }, []);
 
@@ -49,7 +50,7 @@ export default function App() {
     };
   }, [startedAt]);
 
-  // play win sound
+  // play win when done (respect toggle)
   useEffect(() => {
     if (allMatched) safePlay(winSfx);
   }, [allMatched, winSfx, soundOn]);
@@ -90,16 +91,13 @@ export default function App() {
     if (!startedAt) setStartedAt(Date.now());
     safePlay(flipSfx);
 
-    // reveal the clicked card
     setDeck((d) => d.map((c) => (c.id === id ? { ...c, revealed: true } : c)));
 
-    // first card of pair
     if (!first) {
       setFirst({ ...clicked, revealed: true });
       return;
     }
 
-    // second card
     setLock(true);
     setMoves((m) => m + 1);
     const isMatch = first.pairId === clicked.pairId;
@@ -114,7 +112,6 @@ export default function App() {
         );
         setMatchedCount((cnt) => cnt + 2);
       } else {
-        // flip both back
         setDeck((d) =>
           d.map((c) =>
             c.id === first.id || c.id === id ? { ...c, revealed: false } : c
@@ -126,9 +123,9 @@ export default function App() {
     }, 600);
   }
 
-  // columns per difficulty
   const cols = size === 16 ? 4 : size === 20 ? 5 : 6;
 
+  // ✅ handle closing intro
   function handleCloseIntro() {
     setShowIntro(false);
     try {
@@ -164,6 +161,7 @@ export default function App() {
               <button className="btn" onClick={() => reset(size)}>
                 New Game
               </button>
+
               <button
                 className={`btn btn-sound ${soundOn ? "is-on" : "is-off"}`}
                 onClick={() => setSoundOn((s) => !s)}
@@ -184,27 +182,12 @@ export default function App() {
                 Moves: <strong>{moves}</strong> · Time:{" "}
                 <strong>{formatTime(elapsed)}</strong>
               </p>
-              <p>
-                Difficulty:{" "}
-                <strong>
-                  {size === 16 && "Easy (8 pairs)"}
-                  {size === 20 && "Medium (10 pairs)"}
-                  {size === 24 && "Hard (12 pairs)"}
-                </strong>
-              </p>
               <button className="btn" onClick={() => reset(size)}>
                 Play Again
               </button>
             </section>
           ) : (
             <section className="board">
-              {/* ✅ difficulty pill above board */}
-              <div className="difficulty-pill" aria-label="Current difficulty">
-                {size === 16 && "Easy (8 pairs)"}
-                {size === 20 && "Medium (10 pairs)"}
-                {size === 24 && "Hard (12 pairs)"}
-              </div>
-
               <div
                 className="grid"
                 aria-label="Memory board"
@@ -259,7 +242,7 @@ export default function App() {
                 top, and turn sound on/off anytime.
               </p>
               <p className="intro-small">
-                (You’ll only see this the first time on this device.)
+                (This screen shows only the first time on this device.)
               </p>
               <button className="btn intro-btn" onClick={handleCloseIntro}>
                 Start Playing ➜
