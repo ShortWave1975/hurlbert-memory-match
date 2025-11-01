@@ -34,25 +34,24 @@ body {
 
 /* ========== PAGE + APP SHELL ========== */
 
-/* simple block container — NO flex here */
 .page {
   width: 100%;
+  max-width: 1200px;
   min-height: 100vh;
   padding: 1.5rem 1rem 3rem;
 }
 
-/* this is the real “app” — center this */
 .wrap {
   width: 100%;
-  max-width: 1120px;          /* <- how wide the game is allowed to get */
-  margin: 0 auto;             /* ✅ THIS centers on desktop and mobile */
+  max-width: 1120px;
+  margin: 0 auto;             /* ✅ centers content */
   min-height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: var(--gap);
   padding: clamp(12px, 2.5vw, 24px);
   position: relative;
-  z-index: 1;                 /* above snow */
+  z-index: 1;
 }
 
 /* ========== HEADER / CONTROLS ========== */
@@ -119,7 +118,6 @@ body {
 /* ========== BOARD / GRID ========== */
 
 .content {
-  /* center the board section itself */
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -136,8 +134,8 @@ body {
   width: 100%;
   max-width: 980px;
   display: flex;
-  justify-content: center;   /* ✅ center the grid */
-  margin: 0 auto;            /* ✅ in case flex breaks, this still centers */
+  justify-content: center;
+  margin: 0 auto;
 }
 
 .grid {
@@ -210,7 +208,7 @@ body {
   }
 }
 
-/* ========== TYPO ========== */
+/* ========== TYPOGRAPHY ========== */
 
 h1,
 h2 {
@@ -228,14 +226,13 @@ button {
 
 /* ========== RESPONSIVE ========== */
 
-/* Tablets */
 @media (max-width: 900px) {
   .controls {
     justify-content: center;
   }
 }
 
-/* Phones — PORTRAIT: 3 columns, smaller cards */
+/* Phones — portrait */
 @media (max-width: 700px) and (orientation: portrait) {
   .content,
   .board,
@@ -245,7 +242,7 @@ button {
   }
 
   .grid {
-    grid-template-columns: repeat(3, minmax(90px, 1fr)) !important; /* was 100px */
+    grid-template-columns: repeat(3, minmax(90px, 1fr)) !important;
     gap: 8px;
   }
 
@@ -262,7 +259,7 @@ button {
   }
 }
 
-/* Narrow iPhones in portrait */
+/* Narrow iPhones */
 @media (max-width: 430px) and (orientation: portrait) {
   .grid {
     grid-template-columns: repeat(3, minmax(85px, 1fr)) !important;
@@ -273,7 +270,7 @@ button {
   }
 }
 
-/* Phones / landscape — show 4 cols */
+/* Phones — landscape */
 @media (max-width: 900px) and (orientation: landscape) {
   .content,
   .board,
@@ -306,3 +303,16 @@ button {
     grid-template-columns: repeat(2, minmax(110px, 1fr)) !important;
   }
 }
+
+/* ========== SOUND TOGGLE ========== */
+
+.btn-sound.is-off {
+  opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+  .btn-sound {
+    font-size: 0.8rem;
+  }
+}
+

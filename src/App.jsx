@@ -13,6 +13,8 @@ export default function App() {
   const [matchedCount, setMatchedCount] = useState(0);
   const [startedAt, setStartedAt] = useState(null);
   const [elapsed, setElapsed] = useState(0);
+  const [soundOn, setSoundOn] = useState(true); // ✅ new
+
   const timerRef = useRef(null);
 
   const flipSfx = useRef(makeAudio("/sfx/flip.mp3")).current;
@@ -21,6 +23,7 @@ export default function App() {
 
   const allMatched = matchedCount === deck.length && deck.length > 0;
 
+  // timer
   useEffect(() => {
     if (startedAt && !timerRef.current) {
       timerRef.current = setInterval(() => {
@@ -32,9 +35,16 @@ export default function App() {
     };
   }, [startedAt]);
 
+  // play win when done (respect toggle)
   useEffect(() => {
-    if (allMatched) tryPlay(winSfx);
-  }, [allMatched, winSfx]);
+    if (allMatched) safePlay(winSfx);
+  }, [allMatched, winSfx, soundOn]); // ✅ depend on soundOn so if they turn it off, future wins respect it
+
+  // respect the toggle
+  function safePlay(audio) {
+    if (!soundOn) return;
+    tryPlay(audio);
+  }
 
   function reset(newSize = size) {
     setSize(newSize);
@@ -65,7 +75,7 @@ export default function App() {
     if (!clicked || clicked.matched || clicked.revealed) return;
 
     if (!startedAt) setStartedAt(Date.now());
-    tryPlay(flipSfx);
+    safePlay(flipSfx); // ✅ use safePlay
 
     setDeck((d) => d.map((c) => (c.id === id ? { ...c, revealed: true } : c)));
 
@@ -80,7 +90,7 @@ export default function App() {
 
     setTimeout(() => {
       if (isMatch) {
-        tryPlay(matchSfx);
+        safePlay(matchSfx); // ✅ use safePlay
         setDeck((d) =>
           d.map((c) =>
             c.pairId === clicked.pairId ? { ...c, matched: true } : c
@@ -126,6 +136,16 @@ export default function App() {
               </select>
               <button className="btn" onClick={() => reset(size)}>
                 New Game
+              </button>
+
+              {/* ✅ Sound toggle */}
+              <button
+                className={`btn btn-sound ${soundOn ? "is-on" : "is-off"}`}
+                onClick={() => setSoundOn((s) => !s)}
+                type="button"
+                aria-pressed={soundOn}
+              >
+                {soundOn ? "🔊 Sound: On" : "🔇 Sound: Off"}
               </button>
             </div>
           </div>
