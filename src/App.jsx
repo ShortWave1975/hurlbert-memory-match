@@ -38,17 +38,29 @@ export default function App() {
     }
   }, []);
 
-  // timer
+  // ⏱ Timer: start on first flip, stop on win/reset, single source of truth
   useEffect(() => {
-    if (startedAt && !timerRef.current) {
+    // Start timer if game has started and not all matched
+    if (startedAt && !allMatched && !timerRef.current) {
       timerRef.current = setInterval(() => {
         setElapsed(Math.floor((Date.now() - startedAt) / 1000));
       }, 1000);
     }
+
+    // Stop timer when all cards are matched
+    if (allMatched && timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    // Cleanup (on unmount or dependency change)
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     };
-  }, [startedAt]);
+  }, [startedAt, allMatched]);
 
   // play win when done (respect toggle)
   useEffect(() => {
@@ -70,10 +82,12 @@ export default function App() {
     setMatchedCount(0);
     setStartedAt(null);
     setElapsed(0);
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+
     window.scrollTo(0, 0);
   }
 
@@ -85,10 +99,13 @@ export default function App() {
 
   function revealCard(id) {
     if (lock) return;
+
     const clicked = deck.find((c) => c.id === id);
     if (!clicked || clicked.matched || clicked.revealed) return;
 
+    // Start timer on very first flip
     if (!startedAt) setStartedAt(Date.now());
+
     safePlay(flipSfx);
 
     setDeck((d) => d.map((c) => (c.id === id ? { ...c, revealed: true } : c)));
@@ -118,6 +135,7 @@ export default function App() {
           )
         );
       }
+
       setFirst(null);
       setLock(false);
     }, 600);
