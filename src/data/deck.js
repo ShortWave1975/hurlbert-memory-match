@@ -75,4 +75,12 @@ export const DEFAULT_FILES = [
   "timcady.png",
   "Tina.jpeg",
   "tom.png",
+  "Tory.jpeg",
+  "ToryChristina.jpeg",
+  "ts.png",
+  "whiskey.png",
+  "Will.jpeg",
+  "Yogi.jpeg",
+    "auntlaurie.png",
+  "grampy.png",
 ];
